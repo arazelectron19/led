@@ -1,7 +1,7 @@
 {
   "name": "TV LED Anbarı",
   "short_name": "LED Anbar",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f0f2f5",
   "theme_color": "#1877f2",
