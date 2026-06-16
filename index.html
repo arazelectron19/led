@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV LED Anbarı</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="favicon.png">
+</head>
+<body>
+
+    <header>
+        <h1>📺 TV LED Stok Sistemi</h1>
+    </header>
+
+    <main>
+        <section class="search-section">
+            <input type="text" id="searchInput" placeholder="Televizor modelini yazın (məs: LG 42)...">
+        </section>
+
+        <section class="list-section">
+            <h3>Anbardakı LED-lər</h3>
+            <div id="ledList" class="led-grid">
+                </div>
+        </section>
+    </main>
+
+    <button id="openModalBtn" class="fab-btn">+</button>
+
+    <div id="imagePreviewModal" class="modal">
+        <div class="modal-content preview-content">
+            <span id="closePreviewBtn" class="close-btn">&times;</span>
+            <h2 id="previewTitle" style="margin-bottom: 10px; color: #111;"></h2>
+            
+            <div class="large-image-container">
+                <img id="previewImage" src="" alt="Böyük LED Şəkli">
+            </div>
+            
+            <div class="preview-details">
+                <p>📦 Qutu Nömrəsi: <b id="previewBox"></b></p>
+                <p>💰 Satış Qiyməti: <b id="previewPrice"></b></p>
+            </div>
+            
+            <button id="goToEditBtn" class="edit-trigger-btn">✏️ Məlumatı Redaktə Et</button>
+        </div>
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModalBtn" class="close-btn">&times;</span>
+            <h3 id="modalTitle">Yeni LED Əlavə Et</h3>
+            <input type="text" id="ledName" placeholder="LED-in Adı / Model kodu" required>
+            <input type="text" id="boxNumber" placeholder="Qutu Nömrəsi" required>
+            <input type="text" id="ledPrice" placeholder="Qiymət (məs: 25 AZN və ya 25)">
+            
+            <div class="image-upload-group">
+                <label for="ledImageUrl">İnternetdən şəkil linki (URL):</label>
+                <input type="text" id="ledImageUrl" placeholder="https://...">
+                
+                <p style="text-align: center; margin: 5px 0; font-weight: bold; color: #777;">və ya</p>
+                
+                <label for="ledFileInput" class="custom-file-upload">
+                    📁 Telefondan/Kompüterdən Şəkil Seç
+                </label>
+                <input type="file" id="ledFileInput" accept="image/*">
+                <div id="fileSelectedName" style="font-size: 12px; color: green; margin-top: 5px; text-align: center;"></div>
+            </div>
+
+            <button id="saveBtn">Bazaya Yaz</button>
+            <button id="deleteBtn" style="background-color: #dc3545; margin-top: 5px; display: none;">Məlumatı Sil</button>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log("Service Worker Qeydiyyatdan keçdi"))
+                .catch(err => console.log("SW Xətası:", err));
+        }
+    </script>
+</body>
+</html>

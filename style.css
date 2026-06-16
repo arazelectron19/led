@@ -1,0 +1,379 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    color: #333;
+}
+header {
+    background-color: #1877f2;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+main {
+    padding: 15px;
+    max-width: 450px;
+    margin: 0 auto;
+}
+.search-section input {
+    font-size: 16px;
+    padding: 12px;
+    border: 2px solid #1877f2;
+}
+.add-section {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.add-section h3 { margin-top: 0; color: #1877f2; }
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+button {
+    background-color: #24292e;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+}
+button:hover { background-color: #1877f2; }
+.led-grid { margin-top: 20px; }
+.led-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+}
+.led-card h4 { margin: 0 0 10px 0; font-size: 18px; }
+.led-card img {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+.box-badge {
+    background-color: #e4e6eb;
+    padding: 4px 8px;
+    font-weight: bold;
+    border-radius: 4px;
+    color: #050505;
+}
+
+/* Sabit Aşağı Düymə (Floating Action Button) */
+.fab-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #1877f2;
+    color: white;
+    font-size: 30px;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+/* Arxa Fon Qaraltısı (Modal) */
+.modal {
+    display: none; /* İlkin olaraq gizli saxlayırıq */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Form Pəncərəsinin Özü */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    position: relative;
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Bağlama Düyməsi (X) */
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+}
+.close-btn:hover { color: black; }
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Şəkil yükləmə qrupu */
+.image-upload-group {
+    background: #f7f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px dashed #1877f2;
+    margin: 10px 0;
+}
+.image-upload-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+    display: block;
+    margin-bottom: 5px;
+}
+/* Real fayl inputunu gizlədirik və öz dizaynımızı veririk */
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    display: block;
+    background: #e4e6eb;
+    color: #050505;
+    text-align: center;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+.custom-file-upload:hover {
+    background: #d8dadf;
+}
+
+/* Sabit Aşağı Düymə (Floating Action Button) */
+.fab-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #1877f2;
+    color: white;
+    font-size: 30px;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+/* Arxa Fon Qaraltısı (Modal) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Form Pəncərəsinin Özü */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    position: relative;
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Bağlama Düyməsi (X) */
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+}
+.close-btn:hover { color: black; }
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.price-badge {
+    background-color: #e7f5ec;
+    color: #1f874c;
+    padding: 4px 8px;
+    font-weight: bold;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 5px;
+}
+.led-card p {
+    margin: 6px 0;
+    font-size: 15px;
+}
+
+.led-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.led-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Böyük şəkil baxış pəncərəsinin xüsusi dizaynı */
+.preview-content {
+    text-align: center;
+    max-width: 500px;
+}
+.large-image-container {
+    width: 100%;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: #f0f2f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+.large-image-container img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+}
+.preview-details {
+    background: #f7f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+.preview-details p {
+    margin: 5px 0;
+}
+/* Redaktə pəncərəsinə keçid düyməsi */
+.edit-trigger-btn {
+    background-color: #4f46e5;
+    color: white;
+    font-size: 16px;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.edit-trigger-btn:hover {
+    background-color: #4338ca;
+}
+
+/* Böyük şəkil baxış pəncərəsinin xüsusi dizaynı */
+.preview-content {
+    text-align: center;
+    max-width: 500px;
+}
+.large-image-container {
+    width: 100%;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: #f0f2f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+.large-image-container img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+}
+.preview-details {
+    background: #f7f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+.preview-details p {
+    margin: 5px 0;
+}
+/* Redaktə pəncərəsinə keçid düyməsi */
+.edit-trigger-btn {
+    background-color: #4f46e5;
+    color: white;
+    font-size: 16px;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.edit-trigger-btn:hover {
+    background-color: #4338ca;
+}
+
+/* Yüklənir fırlanma effekti (Spinner) */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #1877f2; /* Bizim göy rəng */
+    border-radius: 50%;
+    margin: 30px auto;
+    animation: spin 1s linear infinite;
+}
+
+/* Fırlanma hərəkəti animasiyası */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Ekranın ortasında təmiz görünməsi üçün konteyner */
+.loading-container {
+    text-align: center;
+    width: 100%;
+}
