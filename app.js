@@ -230,20 +230,42 @@ async function ledleriGetir(searchQuery = "") {
     }
 }
 
-// ŞƏKLƏ KLİK EDƏNDƏ TAM EKRAN REJİMİ
+// DETAL KARTINDAKI ŞƏKİLƏ VURANDA TAM EKRAN REJİMİ (ÖNDƏ VƏ MƏRKƏZDƏ)
 previewImage.addEventListener('click', () => {
     if (!currentSelectedData || !currentSelectedData.sekilUrl) return;
 
+    // Tam ekran qutusunu yaradırıq
     const fullScreenContainer = document.createElement('div');
-    fullScreenContainer.className = 'full-screen-mode';
+    
+    // CSS-i birbaşa JS daxilində veririk ki, style.css-dən asılı olmasın və mütləq ƏN ÖNDƏ (z-index: 9999) qalsın
+    fullScreenContainer.style.position = 'fixed';
+    fullScreenContainer.style.top = '0';
+    fullScreenContainer.style.left = '0';
+    fullScreenContainer.style.width = '100vw';
+    fullScreenContainer.style.height = '100vh';
+    fullScreenContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.9)'; // Qara şəffaf arxa fon
+    fullScreenContainer.style.display = 'flex';
+    fullScreenContainer.style.justifyContent = 'center';
+    fullScreenContainer.style.alignItems = 'center';
+    fullScreenContainer.style.zIndex = '9999'; // Bütün modalların tam qabağına çıxarır
+    fullScreenContainer.style.cursor = 'zoom-out';
 
+    // Şəkli yaradırıq
     const fsImage = document.createElement('img');
     fsImage.src = currentSelectedData.sekilUrl;
     fsImage.alt = 'Tam Ekran LED Şəkli';
+    
+    // Şəklin ölçülərini ekrana sığdırırıq
+    fsImage.style.maxWidth = '95%';
+    fsImage.style.maxHeight = '95%';
+    fsImage.style.objectFit = 'contain';
+    fsImage.style.borderRadius = '4px';
+    fsImage.style.boxShadow = '0 5px 25px rgba(0,0,0,0.5)';
 
     fullScreenContainer.appendChild(fsImage);
     document.body.appendChild(fullScreenContainer);
 
+    // Klik edəndə tam ekran rejimini bağlasın
     fullScreenContainer.addEventListener('click', () => {
         fullScreenContainer.remove();
     });
