@@ -3,83 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV LED Anbarı</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
+    <title>Led Anbar</title>
     <link rel="icon" type="image/svg+xml" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
 </head>
+<div id="fullImageModal" class="full-image-modal" style="display: none;">
+    <span class="full-image-close">&times;</span>
+    <img class="full-image-content" id="fullScreenImg">
+</div>
 <body>
 
     <header>
-        <h1>📺 TV LED Stok Sistemi</h1>
+        <div id="normalHeader" class="header-panel">
+            <h1>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor" style="vertical-align: middle; margin-right: 8px;">
+        <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v1c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-1h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/>
+        <path d="M10 19h4v1h-4z"/>
+    </svg>
+    Led Anbar
+</h1>
+        </div>
+
+        <div id="selectionHeader" class="header-panel" style="display: none;">
+            <div class="selection-left">
+                <button id="btnCancelSelection" class="icon-btn">✕</button>
+                <span id="selectionCount">0 seçildi</span>
+            </div>
+            <div class="selection-actions">
+                <button id="btnSelectAll" class="action-btn-outline">Hamısını Seç</button>
+                <button id="btnDeleteSelected" class="action-btn-danger">Sil</button>
+                <button id="btnDeleteAllZakaz" class="action-btn-dark">Tam Sil</button>
+            </div>
+        </div>
     </header>
 
-    <main>
-        <section class="search-section">
+    <main class="main-container">
+        
+        <div class="search-box">
             <input type="text" id="searchInput" placeholder="Led model...">
-        </section>
+        </div>
 
-        <section class="list-section">
-            <h3>Anbardakı LED-lər</h3>
-            <div id="ledList" class="led-grid"></div>
-        </section>
+        <div class="tab-container">
+            <button id="tabAnbar" class="tab-btn active-tab">📦 Anbar</button>
+            <button id="tabZakaz" class="tab-btn">📝 Zakazlar</button>
+        </div>
+
+        <div class="title-container">
+            <h2 id="listTitle">Anbardakı LED-lər</h2>
+        </div>
+
+        <div id="loadingContainer" class="loader-container" style="display: none;">
+            <div class="spinner"></div>
+            <p>Məlumatlar yüklənir...</p>
+        </div>
+
+        <div id="ledList" class="led-grid">
+            </div>
+
     </main>
 
     <button id="openModalBtn" class="fab-btn">+</button>
+</div>
 
-    <div id="imagePreviewModal" class="modal">
-        <div class="modal-content preview-content">
-            <span id="closePreviewBtn" class="close-btn">&times;</span>
-            <h2 id="previewTitle" style="margin-bottom: 10px; color: #111;"></h2>
-            
-            <div class="large-image-container">
-                <img id="previewImage" src="" alt="Böyük LED Şəkli">
-            </div>
-            
-            <div class="preview-details">
-                <p>📦 Qutu Nömrəsi: <b id="previewBox"></b></p>
-                <p>💰 Satış Qiyməti: <b id="previewPrice"></b></p>
-            </div>
-            
-            <button id="goToEditBtn" class="edit-trigger-btn">✏️ Məlumatı Redaktə Et</button>
+    <div id="choiceModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content choice-box">
+            <h3>Seçim Edin</h3>
+            <button id="btnCreateNew" class="menu-btn blue-btn">➕ Yeni LED</button>
+            <button id="btnSelectFromAnbar" class="menu-btn green-btn">📦 Zakaz yaz</button>
         </div>
     </div>
 
-    <div id="addModal" class="modal">
+    <div id="addModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
-            <span id="closeModalBtn" class="close-btn">&times;</span>
             <h3 id="modalTitle">Yeni LED Əlavə Et</h3>
-            <input type="text" id="ledName" placeholder="LED-in Adı / Model kodu" required>
-            <input type="text" id="boxNumber" placeholder="Qutu Nömrəsi" required>
-            <input type="text" id="ledPrice" placeholder="Qiymət (məs: 25 AZN və ya 25)">
+            <div id="modalAlert" class="modal-alert" style="display: none;"></div>
             
-            <div class="image-upload-group">
-                <label for="ledImageUrl">İnternetdən şəkil linki (URL):</label>
-                <input type="text" id="ledImageUrl" placeholder="https://...">
-                
-                <p style="text-align: center; margin: 5px 0; font-weight: bold; color: #777;">və ya</p>
-                
-                <label for="ledFileInput" class="custom-file-upload">
-                    📁 Telefondan/Kompüterdən Şəkil Seç
-                </label>
-                <input type="file" id="ledFileInput" accept="image/*">
-                <div id="fileSelectedName" style="font-size: 12px; color: green; margin-top: 5px; text-align: center;"></div>
+            <div class="form-group">
+                <label>LED Adı (Model)</label>
+                <input type="text" id="ledName" placeholder="Məs: ES-047">
+            </div>
+            <div class="form-group">
+                <label>Qutu Nömrəsi</label>
+                <input type="text" id="boxNumber" placeholder="Məs: 15">
+            </div>
+            <div class="form-group">
+                <label>Qiymət (AZN)</label>
+                <input type="number" id="ledPrice" placeholder="Məs: 45">
+            </div>
+            <div class="form-group">
+                <label>Şəkil URL (İstəyə bağlı)</label>
+                <input type="text" id="ledImageUrl" placeholder="http://...">
+            </div>
+            <div class="form-group file-upload-group">
+                <label class="file-label" for="ledFileInput"Fayldan Şəkil Yüklə</label>
+                <input type="file" id="ledFileInput" accept="image/*" style="display: none;">
+                <span id="fileSelectedName"></span>
             </div>
 
-            <div id="modalAlert" style="display: none; padding: 12px; margin-bottom: 15px; border-radius: 6px; font-weight: bold; text-align: center; font-size: 14px;"></div>
+            <div class="modal-actions">
+                <button id="saveBtn" class="action-btn success">Yadda Saxla</button>
+                <button id="deleteBtn" class="action-btn danger" style="display: none;">Sil</button>
+                <button id="closeModalBtn" class="action-btn cancel">Ləğv Et</button>
+            </div>
+        </div>
+    </div>
 
-            <button id="saveBtn">Bazaya Yaz</button>
-            <button id="deleteBtn" style="background-color: #dc3545; margin-top: 5px; display: none;">Məlumatı Sil</button>
+    <div id="anbarSelectModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content list-select-box">
+            <h3>Anbardan Mal Seçin</h3>
+            <input type="text" id="anbarSearchInput" placeholder="Anbarda axtar..." class="modal-search">
+            <div id="anbarSelectContainer" class="modal-scroll-list"></div>
+            <button id="closeAnbarSelectBtn" class="action-btn cancel" style="width:100%; margin-top:10px;">Bağla</button>
+        </div>
+    </div>
+
+    <div id="countModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content count-box">
+            <h3 id="countModalModelName">Model Adı</h3>
+            <div class="form-group">
+                <label>Sifariş Sayını Yazın (Ədəd)</label>
+                <input type="number" id="zakazCountInput" value="1" min="1">
+            </div>
+            <div class="modal-actions">
+                <button id="btnConfirmZakaz" class="action-btn success">Sifariş Siyahısına Əlavə Et</button>
+                <button id="closeCountBtn" class="action-btn cancel">Geri</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="imagePreviewModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content preview-box">
+            <h3 id="previewTitle">LED Detalları</h3>
+            <div class="preview-img-container">
+                <img id="previewImage" src="" alt="Önizləmə">
+            </div>
+            <div class="preview-info">
+                <p>Qutu Nömrəsi: <span id="previewBox" class="box-badge">-</span></p>
+                <p>Qiymət: <span id="previewPrice" class="price-badge">-</span></p>
+            </div>
+            <div class="modal-actions horizontal">
+                <button id="goToEditBtn" class="action-btn edit-btn">✏️ Məlumatı Yenilə</button>
+                <button id="closePreviewBtn" class="action-btn cancel">Bağla</button>
+            </div>
         </div>
     </div>
 
     <script type="module" src="app.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => console.log("Service Worker Qeydiyyatdan keçdi"))
-                .catch(err => console.log("SW Xətası:", err));
-        }
-    </script>
 </body>
 </html>
