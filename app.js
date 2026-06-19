@@ -171,7 +171,7 @@ async function ledleriGetir(searchQuery = "") {
     ledList.innerHTML = `
         <div class="loading-container" id="mainSpinner">
             <div class="spinner"></div>
-            <p style="color: #666; font-size: 15px; font-weight: 500; margin-top: 10px;">Led axtarılır...</p>
+            <p style="color: #666; font-size: 15px; font-weight: 500; margin-top: 10px;">Yüklənir...</p>
         </div>
     `;
 
