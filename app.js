@@ -89,6 +89,11 @@ if (tabAnbar) {
         exitSelectionMode();
         currentTab = "anbar";
         if (listTitle) listTitle.innerText = "Anbardakı LED-lər";
+        
+        // Klasları nizamlayırıq
+        tabAnbar.classList.add('active');
+        tabZakaz.classList.remove('active');
+        
         tabAnbar.style.backgroundColor = "#007bff"; tabAnbar.style.color = "white";
         tabZakaz.style.backgroundColor = "#e0e0e0"; tabZakaz.style.color = "#333";
         ledleriGetir(searchInput ? searchInput.value : "");
@@ -100,6 +105,11 @@ if (tabZakaz) {
         exitSelectionMode();
         currentTab = "zakaz";
         if (listTitle) listTitle.innerText = "Sifariş Olunacaq LED-lər (Zakaz)";
+        
+        // Klasları nizamlayırıq
+        tabZakaz.classList.add('active');
+        tabAnbar.classList.remove('active');
+        
         tabZakaz.style.backgroundColor = "#28a745"; tabZakaz.style.color = "white";
         tabAnbar.style.backgroundColor = "#e0e0e0"; tabAnbar.style.color = "#333";
         ledleriGetir(searchInput ? searchInput.value : "");
@@ -146,7 +156,7 @@ if (btnSelectAll) {
     });
 }
 
-// 🗑️ SEÇİLMİŞLƏRİ SİLMƏK (İcazə pəncərəsi ləğv edildi)
+// 🗑️ SEÇİLMİŞLƏRİ SİLMƏK
 if (btnDeleteSelected) {
     btnDeleteSelected.addEventListener('click', async () => {
         if (selectedItemIds.length === 0) return;
@@ -169,7 +179,7 @@ if (btnDeleteSelected) {
     });
 }
 
-// 🫗 HAMISINI SİLMƏK (İcazə pəncərəsi ləğv edildi)
+// 🫗 HAMISINI SİLMƏK
 if (btnDeleteAllZakaz) {
     btnDeleteAllZakaz.addEventListener('click', async () => {
         if (loadedZakazIds.length === 0) return;
@@ -231,10 +241,6 @@ async function anbarSiyahisiniYukle() {
     } catch (e) {
         anbarSelectContainer.innerHTML = "<p style='color:red;'>Xəta oldu.</p>";
     }
-}
-
-function removeAlertsAndConfirms() {
-    // Daxili təmizləmə funksiyası
 }
 
 function anbarListesiniGoster(items) {
@@ -452,7 +458,6 @@ if (saveBtn) {
     });
 }
 
-// 📦 ANBARDAN MAL SİLƏNDƏ KÖHNƏ CONFIRM SAXLANILDI (İstəsən bunu da silə bilərəm)
 if (deleteBtn) {
     deleteBtn.addEventListener('click', async () => {
         if (!currentSelectedData || !currentSelectedData.id) return;
@@ -501,17 +506,14 @@ window.addEventListener('click', (e) => {
 
 if (searchInput) searchInput.addEventListener('input', (e) => ledleriGetir(e.target.value));
 
-ledleriGetir();
-
 // 🎯 Şəkli tam ekran etmə funksiyası
 const fullImageModal = document.getElementById('fullImageModal');
 const fullScreenImg = document.getElementById('fullScreenImg');
 const fullImageClose = document.querySelector('.full-image-close');
-const previewImageEl = document.getElementById('previewImage'); // Mövcud kiçik şəkil elementin
+const previewImageEl = document.getElementById('previewImage');
 
-// Kiçik şəklin üzərinə klikləyəndə tam ekran modalını aç
 if (previewImageEl) {
-    previewImageEl.style.cursor = "pointer"; // Üzərinə gələndə kursorun dəyişməsi üçün
+    previewImageEl.style.cursor = "pointer";
     previewImageEl.addEventListener('click', () => {
         if (previewImageEl.src && !previewImageEl.src.includes('placeholder')) {
             fullScreenImg.src = previewImageEl.src;
@@ -520,16 +522,25 @@ if (previewImageEl) {
     });
 }
 
-// "X" düyməsinə basanda tam ekran modalını bağla
 if (fullImageClose) {
     fullImageClose.addEventListener('click', () => {
         fullImageModal.style.display = 'none';
     });
 }
 
-// Qara fona klikləyəndə də modalın bağlanması üçün (pəncərə xarici klik)
-fullImageModal.addEventListener('click', (e) => {
-    if (e.target === fullImageModal) {
-        fullImageModal.style.display = 'none';
-    }
-});
+if (fullImageModal) {
+    fullImageModal.addEventListener('click', (e) => {
+        if (e.target === fullImageModal) {
+            fullImageModal.style.display = 'none';
+        }
+    });
+}
+
+// 🚀 İLK AÇILIŞ TƏNZİMLƏMƏSİ 
+// Sayt brauzerdə ilk açılan an işə düşür və Anbar tabını avtomatik aktivləşdirir
+if (tabAnbar) {
+    tabAnbar.classList.add('active');
+    tabAnbar.style.backgroundColor = "#007bff"; 
+    tabAnbar.style.color = "white";
+}
+ledleriGetir();
