@@ -1,20 +1,21 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// BURANI ÖZ REAL FİREBASE KODLARINLA ƏVƏZLƏ!
+// FİREBASE KONFİQURASİYASI
 const firebaseConfig = {
     apiKey: "AIzaSyCF74oiYNEvgWm1rJA7fFERN3kClB1ypSM",
-  authDomain: "led-zakaz.firebaseapp.com",
-  projectId: "led-zakaz",
-  storageBucket: "led-zakaz.firebasestorage.app",
-  messagingSenderId: "102340279964",
-  appId: "1:102340279964:web:fda009aeddf5cccc5b3759",
-  measurementId: "G-4JW29M5CCR"
+    authDomain: "led-zakaz.firebaseapp.com",
+    projectId: "led-zakaz",
+    storageBucket: "led-zakaz.firebasestorage.app",
+    messagingSenderId: "102340279964",
+    appId: "1:102340279964:web:fda009aeddf5cccc5b3759",
+    measurementId: "G-4JW29M5CCR"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Elementləri götürürük
 const saveBtn = document.getElementById('saveBtn');
 const deleteBtn = document.getElementById('deleteBtn');
 const ledList = document.getElementById('ledList');
@@ -22,6 +23,9 @@ const searchInput = document.getElementById('searchInput');
 const ledFileInput = document.getElementById('ledFileInput');
 const fileSelectedName = document.getElementById('fileSelectedName');
 const modalTitle = document.getElementById('modalTitle');
+const modal = document.getElementById('addModal');
+const openModalBtn = document.getElementById('openModalBtn');
+const closeModalBtn = document.getElementById('closeModalBtn');
 
 // Preview Modalı elementləri
 const imagePreviewModal = document.getElementById('imagePreviewModal');
@@ -33,8 +37,30 @@ const previewPrice = document.getElementById('previewPrice');
 const goToEditBtn = document.getElementById('goToEditBtn');
 
 let base64Image = "";
-let currentSelectedData = null; // Hazırda baxılan LED-in bütün məlumatları
+let currentSelectedData = null;
 
+// 🎨 KVADRATIN DAXİLİNDƏ RƏNGLİ MESAJ GÖSTƏRMƏK (YAŞIL VƏ QIRMIZI)
+function showInModalAlert(message, isError = false) {
+    const alertBox = document.getElementById("modalAlert");
+    if (alertBox) {
+        alertBox.textContent = message;
+        alertBox.style.display = "block";
+        
+        if (isError) {
+            // Səhv və ya Silinmə olanda: Qırmızı fon, tünd qırmızı yazı
+            alertBox.style.backgroundColor = "#fce8e6";
+            alertBox.style.color = "#c5221f";
+            alertBox.style.border = "1px solid #fad2cf";
+        } else {
+            // Hər şey düz olanda: Yaşıl fon, tünd yaşıl yazı
+            alertBox.style.backgroundColor = "#e7f5ec";
+            alertBox.style.color = "#1f874c";
+            alertBox.style.border = "1px solid #d3edd9";
+        }
+    }
+}
+
+// Fayl seçiləndə base64-ə çevir
 ledFileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -54,7 +80,10 @@ saveBtn.addEventListener('click', async () => {
     const price = document.getElementById('ledPrice').value;
     const imageUrl = document.getElementById('ledImageUrl').value;
 
-    if(!name || !box) return alert("Zəhmət olmasa LED adı və Qutu nömrəsini yazın!");
+    if(!name || !box) {
+        showInModalAlert("Zəhmət olmasa LED adı və Qutu nömrəsini yazın!", true);
+        return;
+    }
 
     let finalImageUrl = "https://via.placeholder.com/150?text=Sekil+Yoxdur";
     if (base64Image) {
@@ -80,55 +109,78 @@ saveBtn.addEventListener('click', async () => {
         if (currentSelectedData && currentSelectedData.id) {
             const docRef = doc(db, "ledler", currentSelectedData.id);
             await updateDoc(docRef, ledData);
-            alert("Məlumat uğurla yeniləndi!");
+            showInModalAlert("Məlumat uğurla yeniləndi!", false); // Yaşıl zolaq çıxır
         } else {
             await addDoc(collection(db, "ledler"), ledData);
-            alert("Uğurla əlavə edildi!");
+            showInModalAlert("Uğurla əlavə edildi!", false); // Yaşıl zolaq çıxır
         }
 
-        closeAndResetModal();
-        imagePreviewModal.style.display = 'none';
+        // Siyahı anında yenilənir
         ledleriGetir();
+
+        // 2 saniyə mesaja baxsınlar deyə gözləyib modalı bağlayırıq
+        setTimeout(() => {
+            closeAndResetModal();
+            imagePreviewModal.style.display = 'none';
+        }, 2000);
+
     } catch (error) {
         console.error("Xəta: ", error);
-        alert("Xəta baş verdi.");
+        showInModalAlert("Xəta baş verdi.", true); // Qırmızı zolaq çıxır
     } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerText = "Bazaya Yaz";
+        setTimeout(() => {
+            saveBtn.disabled = false;
+            saveBtn.innerText = currentSelectedData && currentSelectedData.id ? "Yenilə" : "Bazaya Yaz";
+        }, 2000);
     }
 });
 
-// SİLMƏK FUNKSİYASI
+// SİLMƏK FUNKSİYASI (HEÇ BİR BLOKLAYICI ALERT YOXDUR, KVADRATDA QIRMIZI GÖSTƏRİR)
 deleteBtn.addEventListener('click', async () => {
     if (!currentSelectedData || !currentSelectedData.id) return;
     
-    if (confirm("Bu LED məlumatını anbardan tamamilə silmək istədiyinizə əminsiniz?")) {
-        try {
-            const docRef = doc(db, "ledler", currentSelectedData.id);
-            await deleteDoc(docRef);
-            alert("Məlumat silindi!");
+    try {
+        deleteBtn.innerText = "Silinir...";
+        deleteBtn.disabled = true;
+
+        const docRef = doc(db, "ledler", currentSelectedData.id);
+        await deleteDoc(docRef);
+        
+        showInModalAlert("Məlumat anbardan silindi!", true); // Qırmızı zolaq çıxır
+        
+        ledleriGetir();
+        
+        setTimeout(() => {
             closeAndResetModal();
             imagePreviewModal.style.display = 'none';
-            ledleriGetir();
-        } catch (error) {
-            console.error(error);
-            alert("Silərkən xəta oldu.");
-        }
+        }, 2000);
+        
+    } catch (error) {
+        console.error(error);
+        showInModalAlert("Silərkən xəta oldu.", true);
+    } finally {
+        setTimeout(() => {
+            deleteBtn.disabled = false;
+            deleteBtn.innerText = "Məlumatı Sil";
+        }, 2000);
     }
 });
 
 // BAZADAN LED-LƏRİ OXUMAQ VƏ AXTARIŞ
 async function ledleriGetir(searchQuery = "") {
-   ledList.innerHTML = `
-    <div class="loading-container">
-        <div class="spinner"></div>
-        <p style="color: #777; font-size: 14px;">Məlumatlar gətirilir...</p>
-    </div> `;
+    ledList.innerHTML = `
+        <div class="loading-container" id="mainSpinner">
+            <div class="spinner"></div>
+            <p style="color: #666; font-size: 15px; font-weight: 500; margin-top: 10px;">Led axtarılır...</p>
+        </div>
+    `;
 
     try {
         const q = query(collection(db, "ledler"), orderBy("tarix", "desc"));
         const querySnapshot = await getDocs(q);
+        
         ledList.innerHTML = "";
+        let hansiSaLedTapildi = false;
 
         querySnapshot.forEach((doc) => {
             const id = doc.id;
@@ -136,15 +188,15 @@ async function ledleriGetir(searchQuery = "") {
             
             if(searchQuery && !data.ledAdi.includes(searchQuery.toUpperCase())) return;
 
+            hansiSaLedTapildi = true;
+
             let displayPrice = data.qiymet;
-            // Ekranda "undefined" yazılmasının qarşısını alırıq
             if (!displayPrice || displayPrice === "undefined") {
                 displayPrice = "Təyin edilməyib";
             } else if(!isNaN(displayPrice)) {
                 displayPrice = displayPrice + " AZN";
             }
 
-            // Əgər köhnə xarab şəkil linki varsa placeholder qoyur
             const currentImg = (data.sekilUrl && data.sekilUrl !== "undefined") ? data.sekilUrl : "https://via.placeholder.com/150?text=Sekil+Yoxdur";
 
             const card = document.createElement('div');
@@ -156,27 +208,48 @@ async function ledleriGetir(searchQuery = "") {
                 <img src="${currentImg}" alt="led-sekli">
             `;
 
-            // MƏRHƏLƏ 1: KARTA VURANDA ŞƏKİL BÖYÜTMƏ MODALI AÇILIR
             card.addEventListener('click', () => {
                 currentSelectedData = { id, ...data, sekilUrl: currentImg };
-                
                 previewTitle.innerText = data.ledAdi;
                 previewImage.src = currentImg;
                 previewBox.innerText = data.qutuNomresi;
                 previewPrice.innerText = displayPrice;
-                
                 imagePreviewModal.style.display = 'flex';
             });
 
             ledList.appendChild(card);
         });
+
+        if (!hansiSaLedTapildi) {
+            ledList.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">Axtarışa uyğun LED tapılmadı.</p>`;
+        }
+
     } catch (error) {
-        ledList.innerHTML = "<p>Məlumat gətirilərkən xəta oldu.</p>";
+        ledList.innerHTML = "<p style='text-align:center; color:red; padding:20px;'>Məlumat gətirilərkən xəta oldu.</p>";
         console.error(error);
     }
 }
 
-// MƏRHƏLƏ 2: ŞƏKİL ALTINDAKI REDAKTƏ DÜYMƏSİNƏ BASANDA FORMUN AÇILMASI
+// ŞƏKLƏ KLİK EDƏNDƏ TAM EKRAN REJİMİ
+previewImage.addEventListener('click', () => {
+    if (!currentSelectedData || !currentSelectedData.sekilUrl) return;
+
+    const fullScreenContainer = document.createElement('div');
+    fullScreenContainer.className = 'full-screen-mode';
+
+    const fsImage = document.createElement('img');
+    fsImage.src = currentSelectedData.sekilUrl;
+    fsImage.alt = 'Tam Ekran LED Şəkli';
+
+    fullScreenContainer.appendChild(fsImage);
+    document.body.appendChild(fullScreenContainer);
+
+    fullScreenContainer.addEventListener('click', () => {
+        fullScreenContainer.remove();
+    });
+});
+
+// REDAKTƏ REJİMİ
 goToEditBtn.addEventListener('click', () => {
     if (!currentSelectedData) return;
     
@@ -184,17 +257,19 @@ goToEditBtn.addEventListener('click', () => {
     document.getElementById('ledName').value = currentSelectedData.ledAdi;
     document.getElementById('boxNumber').value = currentSelectedData.qutuNomresi;
     
-    // Undefined korlamasını təmizləyirik
     const rawPrice = currentSelectedData.qiymet;
     document.getElementById('ledPrice').value = (rawPrice === "Təyin edilməyib" || rawPrice === "undefined") ? "" : rawPrice;
-    
-    // Şəkil URL mətndirsə göstər, base64-dürsə gizlət
     document.getElementById('ledImageUrl').value = currentSelectedData.sekilUrl.startsWith("data:image") ? "" : currentSelectedData.sekilUrl;
     
     saveBtn.innerText = "Yenilə";
     deleteBtn.style.display = "block";
     
-    // Şəkil pəncərəsini bağla, forma pəncərəsini aç
+    const alertBox = document.getElementById("modalAlert");
+    if (alertBox) {
+        alertBox.style.display = "none";
+        alertBox.textContent = "";
+    }
+
     imagePreviewModal.style.display = 'none';
     modal.style.display = 'flex';
 });
@@ -212,14 +287,17 @@ function closeAndResetModal() {
     modalTitle.innerText = "Yeni LED Əlavə Et";
     saveBtn.innerText = "Bazaya Yaz";
     deleteBtn.style.display = "none";
+    
+    const alertBox = document.getElementById("modalAlert");
+    if (alertBox) {
+        alertBox.style.display = "none";
+        alertBox.textContent = "";
+    }
+    
     modal.style.display = 'none';
 }
 
-// MODAL BAĞLAMA DÜYMƏLƏRİ
-const modal = document.getElementById('addModal');
-const openModalBtn = document.getElementById('openModalBtn');
-const closeModalBtn = document.getElementById('closeModalBtn');
-
+// MENYUNU AÇMA / BAĞLAMA HADİSƏLƏRİ
 openModalBtn.addEventListener('click', () => {
     closeAndResetModal();
     modal.style.display = 'flex';
