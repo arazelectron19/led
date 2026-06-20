@@ -90,7 +90,6 @@ if (tabAnbar) {
         currentTab = "anbar";
         if (listTitle) listTitle.innerText = "Anbardakı LED-lər";
         
-        // Klasları nizamlayırıq
         tabAnbar.classList.add('active');
         tabZakaz.classList.remove('active');
         
@@ -106,7 +105,6 @@ if (tabZakaz) {
         currentTab = "zakaz";
         if (listTitle) listTitle.innerText = "Sifariş Olunacaq LED-lər (Zakaz)";
         
-        // Klasları nizamlayırıq
         tabZakaz.classList.add('active');
         tabAnbar.classList.remove('active');
         
@@ -209,6 +207,9 @@ if (btnCreateNew) {
     btnCreateNew.addEventListener('click', () => {
         choiceModal.style.display = 'none';
         closeAndResetModal();
+        if (modalTitle) modalTitle.innerText = "Yeni LED Əlavə Et";
+        if (saveBtn) saveBtn.innerText = "Yadda saxla";
+        if (deleteBtn) deleteBtn.style.display = "none";
         modal.style.display = 'flex';
     });
 }
@@ -453,7 +454,15 @@ if (saveBtn) {
         } catch (error) {
             showInModalAlert("Xəta baş verdi.", true);
         } finally {
-            setTimeout(() => { saveBtn.disabled = false; }, 1000);
+            // 🎯 Düymə adının ilişib qalmaması üçün burada yenidən nizamlayırıq
+            setTimeout(() => { 
+                saveBtn.disabled = false; 
+                if (currentSelectedData && currentSelectedData.id) {
+                    saveBtn.innerText = "Yenilə";
+                } else {
+                    saveBtn.innerText = "Yadda saxla";
+                }
+            }, 1000);
         }
     });
 }
@@ -490,6 +499,10 @@ function closeAndResetModal() {
     if (ledFileInput) ledFileInput.value = "";
     if (fileSelectedName) fileSelectedName.innerText = "";
     base64Image = ""; currentSelectedData = null;
+    
+    // 🎯 Hər dəfə pəncərə tam bağlananda düyməni sıfırlayırıq ki, növbəti açılışda "Yadda saxla" olsun
+    if (saveBtn) saveBtn.innerText = "Yadda saxla";
+    
     if (modal) modal.style.display = 'none';
 }
 
@@ -537,7 +550,6 @@ if (fullImageModal) {
 }
 
 // 🚀 İLK AÇILIŞ TƏNZİMLƏMƏSİ 
-// Sayt brauzerdə ilk açılan an işə düşür və Anbar tabını avtomatik aktivləşdirir
 if (tabAnbar) {
     tabAnbar.classList.add('active');
     tabAnbar.style.backgroundColor = "#007bff"; 
